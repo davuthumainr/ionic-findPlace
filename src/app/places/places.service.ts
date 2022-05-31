@@ -31,7 +31,7 @@ export class PlacesService {
   ];
 
   //get copy of places with getter method
-  get places() {
+  get getPlaces() {
     return [...this._places];
   }
 
