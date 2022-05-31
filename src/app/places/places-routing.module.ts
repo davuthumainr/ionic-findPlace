@@ -19,7 +19,7 @@ const routes: Routes = [
               ),
           },
           {
-            path: 'placeId',
+            path: ':placeId',
             loadChildren: () =>
               import('./discover/place-detail/place-detail.module').then(
                 (m) => m.PlaceDetailPageModule
