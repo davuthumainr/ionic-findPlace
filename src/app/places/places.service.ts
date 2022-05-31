@@ -23,17 +23,22 @@ export class PlacesService {
     ),
     new Place(
       'p3',
-      'Groningen Agoda',
+      'Groningen',
       'A beautiful historic city',
       'https://www.27vakantiedagen.nl/wp-content/uploads/2021/02/groningen-stad.jpg',
       129.99
     ),
   ];
 
+  constructor() {}
+
   //get copy of places with getter method
   get getPlaces() {
     return [...this._places];
   }
 
-  constructor() {}
+  //get copy of Place that given id
+  getPlace(id: string) {
+    return { ...this._places.find((p) => p.id === id) };
+  }
 }
