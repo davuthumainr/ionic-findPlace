@@ -26,4 +26,9 @@ export class DiscoverPage implements OnInit {
   onOpenMenu() {
     this.menuController.toggle();
   }
+
+  //
+  onFilterUpdate(event: any) {
+    console.log(event.detail);
+  }
 }
