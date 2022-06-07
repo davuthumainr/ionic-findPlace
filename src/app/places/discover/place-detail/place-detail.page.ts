@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-// import { Router, ActivatedRoute } from '@angular/router'; //angular routing
-import { ModalController, NavController } from '@ionic/angular'; //ionic routing
+import {
+  ActionSheetController,
+  ModalController,
+  NavController,
+} from '@ionic/angular';
 import { PlacesService } from '../../places.service';
 import { Place } from '../../places.model';
 import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
@@ -18,7 +21,8 @@ export class PlaceDetailPage implements OnInit {
     private navController: NavController,
     private route: ActivatedRoute,
     private placesService: PlacesService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private actionSheetController: ActionSheetController
   ) {}
 
   ngOnInit() {
@@ -35,7 +39,37 @@ export class PlaceDetailPage implements OnInit {
     // this.router.navigateByUrl('/places/tabs/discover');//navigation angular
     //this.navController.navigateBack('/places/tabs/discover'); //navigation ionic
     // this.navController.pop();//that will not work after page refreshing.
+    this.actionSheetController
+      .create({
+        header: 'Choose an Action',
+        buttons: [
+          {
+            text: 'Select Date',
+            handler: () => {
+              this.openBookingModal('select');
+            },
+          },
+          {
+            text: 'Random Date',
+            handler: () => {
+              this.openBookingModal('random');
+            },
+          },
+          {
+            text: 'Cancel',
+            role: 'destructive',
+            // role: 'cancel',
+          },
+        ],
+      })
+      .then((actionSheetElement) => {
+        actionSheetElement.present();
+      });
+  }
 
+  //
+  openBookingModal(mode: 'select' | 'random') {
+    console.log(mode);
     this.modalController
       .create({
         component: CreateBookingComponent,
