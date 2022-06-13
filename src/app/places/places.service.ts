@@ -12,42 +12,54 @@ export class PlacesService {
       'Amsterdam',
       'Capital of Netherlands',
       'http://www.sporcle.com/blog/wp-content/uploads/2018/02/1-14.jpg',
-      139.99
+      139.99,
+      new Date('2022-01-01'),
+      new Date('2022-12-31')
     ),
     new Place(
       'p2',
       'Roterdam',
       `Europe's port to the world.`,
       'https://www.ubm-development.com/magazin/wp-content/uploads/2020/12/S_top_PowerhouseCompany_Codrico00_Plomp.jpg',
-      129.99
+      129.99,
+      new Date('2022-01-01'),
+      new Date('2022-12-31')
     ),
     new Place(
       'p3',
       'Groningen',
       'A beautiful historic city',
       'https://www.27vakantiedagen.nl/wp-content/uploads/2021/02/groningen-stad.jpg',
-      129.99
+      129.99,
+      new Date('2022-01-01'),
+      new Date('2022-12-31')
     ),
     new Place(
       'p4',
       'Amsterdam',
       'Capital of Netherlands',
       'http://www.sporcle.com/blog/wp-content/uploads/2018/02/1-14.jpg',
-      139.99
+      139.99,
+      new Date('2022-01-01'),
+      new Date('2022-12-31')
     ),
     new Place(
       'p5',
       'Roterdam',
       `Europe's port to the world.`,
       'https://www.ubm-development.com/magazin/wp-content/uploads/2020/12/S_top_PowerhouseCompany_Codrico00_Plomp.jpg',
-      129.99
+      129.99,
+      new Date('2022-01-01'),
+      new Date('2022-12-31')
     ),
     new Place(
       'p6',
       'Groningen',
       'A beautiful historic city',
       'https://www.27vakantiedagen.nl/wp-content/uploads/2021/02/groningen-stad.jpg',
-      129.99
+      129.99,
+      new Date('2022-01-01'),
+      new Date('2022-12-31')
     ),
   ];
 
