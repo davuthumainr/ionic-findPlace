@@ -42,7 +42,7 @@ export class DiscoverPage implements OnInit, OnDestroy {
   }
 
   //
-  onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
+  onFilterUpdate(event,_detail?: CustomEvent<SegmentChangeEventDetail>) {
     if (event.detail.value === 'all') {
       this.relevantPlaces = this.loadedPlaces;
       this.listedLoadedPlaces = this.relevantPlaces.slice(1);
