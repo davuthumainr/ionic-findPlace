@@ -22,7 +22,7 @@ export class BookingsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.bookingsService.bookings.subscribe((bookings) => {
+    this.bookingSub = this.bookingsService.bookings.subscribe((bookings) => {
       this.loagedBookings = bookings;
     });
   }
