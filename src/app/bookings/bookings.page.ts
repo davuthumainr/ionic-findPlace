@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./bookings.page.scss'],
 })
 export class BookingsPage implements OnInit, OnDestroy {
-  loagedBookings: Booking[];
+  loadedBookings: Booking[];
   private bookingSub: Subscription;
 
   constructor(
@@ -26,7 +26,7 @@ export class BookingsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.bookingSub = this.bookingsService.bookings.subscribe((bookings) => {
-      this.loagedBookings = bookings;
+      this.loadedBookings = bookings;
     });
   }
 
