@@ -3,6 +3,7 @@ import { Place } from './places.model';
 import { AuthService } from '../auth/auth.service';
 import { BehaviorSubject } from 'rxjs';
 import { take, map, tap, delay } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -71,7 +72,10 @@ export class PlacesService {
     ),
   ]);
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private httpClient: HttpClient
+  ) {}
 
   //get copy of places with getter method
   get places() {
@@ -107,13 +111,22 @@ export class PlacesService {
       this.authService.userId
     );
 
-    return this.places.pipe(
-      take(1),
-      delay(1000),
-      tap((places) => {
-        this._places.next(places.concat(newPlace));
-      })
-    );
+    return this.httpClient
+      .post(
+        'https://find-place-dvt-default-rtdb.europe-west1.firebasedatabase.app/offered-places.json',
+        { ...newPlace, id: null }
+      )
+      .pipe(tap(responseData => {
+        console.log(responseData);
+      }));
+
+    // return this.places.pipe(
+    //   take(1),
+    //   delay(1000),
+    //   tap((places) => {
+    //     this._places.next(places.concat(newPlace));
+    //   })
+    // );
   }
 
   updatePlace(placeId: string, title: string, description: string) {
