@@ -14,6 +14,7 @@ export class DiscoverPage implements OnInit, OnDestroy {
   loadedPlaces: Place[];
   listedLoadedPlaces: Place[];
   relevantPlaces: Place[];
+  isLoading = false;
   private placesSub: Subscription;
 
   constructor(
@@ -36,19 +37,27 @@ export class DiscoverPage implements OnInit, OnDestroy {
     });
   }
 
+  //
+  ionViewWillEnter() {
+    this.isLoading = true;
+    this.placesService.fetchPlace().subscribe(() =>{
+      this.isLoading = false;
+    });
+  }
+
   //discover menu - openmenu
   onOpenMenu() {
     this.menuController.toggle();
   }
 
   //
-  onFilterUpdate(event,_detail?: CustomEvent<SegmentChangeEventDetail>) {
+  onFilterUpdate(event, _detail?: CustomEvent<SegmentChangeEventDetail>) {
     if (event.detail.value === 'all') {
       this.relevantPlaces = this.loadedPlaces;
       this.listedLoadedPlaces = this.relevantPlaces.slice(1);
     } else {
       this.relevantPlaces = this.loadedPlaces.filter(
-        place => place.userId !== this.authService.userId
+        (place) => place.userId !== this.authService.userId
       );
       this.listedLoadedPlaces = this.relevantPlaces.slice(1);
     }
