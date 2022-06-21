@@ -2,80 +2,92 @@ import { Injectable } from '@angular/core';
 import { Place } from './places.model';
 import { AuthService } from '../auth/auth.service';
 import { BehaviorSubject } from 'rxjs';
-import { take, map, tap, delay } from 'rxjs/operators';
+import { take, map, tap, delay, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+
+interface PlaceData {
+  availableFrom: string;
+  availableTo: string;
+  description: string;
+  imageUrl: string;
+  price: number;
+  title: string;
+  userId: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class PlacesService {
-  private _places = new BehaviorSubject<Place[]>([
-    new Place(
-      'p1',
-      'Amsterdam',
-      'Capital of Netherlands',
-      'http://www.sporcle.com/blog/wp-content/uploads/2018/02/1-14.jpg',
-      139.99,
-      new Date('2022-01-01'),
-      new Date('2022-12-31'),
-      'abc'
-    ),
-    new Place(
-      'p2',
-      'Roterdam',
-      `Europe's port to the world.`,
-      'https://www.ubm-development.com/magazin/wp-content/uploads/2020/12/S_top_PowerhouseCompany_Codrico00_Plomp.jpg',
-      129.99,
-      new Date('2022-01-01'),
-      new Date('2022-12-31'),
-      'abc'
-    ),
-    new Place(
-      'p3',
-      'Groningen',
-      'A beautiful historic city',
-      'https://www.27vakantiedagen.nl/wp-content/uploads/2021/02/groningen-stad.jpg',
-      129.99,
-      new Date('2022-01-01'),
-      new Date('2022-12-31'),
-      'abc'
-    ),
-    new Place(
-      'p4',
-      'Amsterdam',
-      'Capital of Netherlands',
-      'http://www.sporcle.com/blog/wp-content/uploads/2018/02/1-14.jpg',
-      139.99,
-      new Date('2022-01-01'),
-      new Date('2022-12-31'),
-      'abc'
-    ),
-    new Place(
-      'p5',
-      'Roterdam',
-      `Europe's port to the world.`,
-      'https://www.ubm-development.com/magazin/wp-content/uploads/2020/12/S_top_PowerhouseCompany_Codrico00_Plomp.jpg',
-      129.99,
-      new Date('2022-01-01'),
-      new Date('2022-12-31'),
-      'abc'
-    ),
-    new Place(
-      'p6',
-      'Groningen',
-      'A beautiful historic city',
-      'https://www.27vakantiedagen.nl/wp-content/uploads/2021/02/groningen-stad.jpg',
-      129.99,
-      new Date('2022-01-01'),
-      new Date('2022-12-31'),
-      'abc'
-    ),
-  ]);
-
   constructor(
     private authService: AuthService,
     private httpClient: HttpClient
   ) {}
+
+  private _places = new BehaviorSubject<Place[]>([]);
+
+  // private _places = new BehaviorSubject<Place[]>([
+  //   new Place(
+  //     'p1',
+  //     'Amsterdam',
+  //     'Capital of Netherlands',
+  //     'http://www.sporcle.com/blog/wp-content/uploads/2018/02/1-14.jpg',
+  //     139.99,
+  //     new Date('2022-01-01'),
+  //     new Date('2022-12-31'),
+  //     'abc'
+  //   ),
+  //   new Place(
+  //     'p2',
+  //     'Roterdam',
+  //     `Europe's port to the world.`,
+  //     'https://www.ubm-development.com/magazin/wp-content/uploads/2020/12/S_top_PowerhouseCompany_Codrico00_Plomp.jpg',
+  //     129.99,
+  //     new Date('2022-01-01'),
+  //     new Date('2022-12-31'),
+  //     'abc'
+  //   ),
+  //   new Place(
+  //     'p3',
+  //     'Groningen',
+  //     'A beautiful historic city',
+  //     'https://www.27vakantiedagen.nl/wp-content/uploads/2021/02/groningen-stad.jpg',
+  //     129.99,
+  //     new Date('2022-01-01'),
+  //     new Date('2022-12-31'),
+  //     'abc'
+  //   ),
+  //   new Place(
+  //     'p4',
+  //     'Amsterdam',
+  //     'Capital of Netherlands',
+  //     'http://www.sporcle.com/blog/wp-content/uploads/2018/02/1-14.jpg',
+  //     139.99,
+  //     new Date('2022-01-01'),
+  //     new Date('2022-12-31'),
+  //     'abc'
+  //   ),
+  //   new Place(
+  //     'p5',
+  //     'Roterdam',
+  //     `Europe's port to the world.`,
+  //     'https://www.ubm-development.com/magazin/wp-content/uploads/2020/12/S_top_PowerhouseCompany_Codrico00_Plomp.jpg',
+  //     129.99,
+  //     new Date('2022-01-01'),
+  //     new Date('2022-12-31'),
+  //     'abc'
+  //   ),
+  //   new Place(
+  //     'p6',
+  //     'Groningen',
+  //     'A beautiful historic city',
+  //     'https://www.27vakantiedagen.nl/wp-content/uploads/2021/02/groningen-stad.jpg',
+  //     129.99,
+  //     new Date('2022-01-01'),
+  //     new Date('2022-12-31'),
+  //     'abc'
+  //   ),
+  // ]);
 
   //get copy of places with getter method
   get places() {
@@ -92,6 +104,39 @@ export class PlacesService {
     );
   }
 
+  //fetchPlace
+  fetchPlace() {
+    return this.httpClient
+      .get<{ [key: string]: PlaceData }>(
+        'https://find-place-dvt-default-rtdb.europe-west1.firebasedatabase.app/offered-places.json'
+      )
+      .pipe(
+        map((responseData) => {
+          const places = [];
+          for (const key in responseData) {
+            if (responseData.hasOwnProperty(key)) {
+              places.push(
+                new Place(
+                  key,
+                  responseData[key].title,
+                  responseData[key].description,
+                  responseData[key].imageUrl,
+                  responseData[key].price,
+                  new Date(responseData[key].availableFrom),
+                  new Date(responseData[key].availableTo),
+                  responseData[key].userId
+                )
+              );
+            }
+          }
+          return places;
+        }),
+        tap((places) => {
+          this._places.next(places);
+        })
+      );
+  }
+
   //addPlace
   addPlace(
     title: string,
@@ -100,6 +145,7 @@ export class PlacesService {
     dateFrom: Date,
     dateTo: Date
   ) {
+    let generatedId: string;
     const newPlace = new Place(
       Math.random().toString(),
       title,
@@ -112,13 +158,21 @@ export class PlacesService {
     );
 
     return this.httpClient
-      .post(
+      .post<{ name: string }>(
         'https://find-place-dvt-default-rtdb.europe-west1.firebasedatabase.app/offered-places.json',
         { ...newPlace, id: null }
       )
-      .pipe(tap(responseData => {
-        console.log(responseData);
-      }));
+      .pipe(
+        switchMap((responseData) => {
+          generatedId = responseData.name;
+          return this.places;
+        }),
+        take(1),
+        tap((places) => {
+          newPlace.id = generatedId;
+          this._places.next(places.concat(newPlace));
+        })
+      );
 
     // return this.places.pipe(
     //   take(1),
