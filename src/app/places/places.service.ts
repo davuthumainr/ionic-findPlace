@@ -96,12 +96,24 @@ export class PlacesService {
 
   //get copy of Place that given id
   getPlace(id: string) {
-    return this.places.pipe(
-      take(1),
-      map((places) => {
-        return { ...places.find((p) => p.id === id) };
-      })
-    );
+    return this.httpClient
+      .get<PlaceData>(
+        `https://find-place-dvt-default-rtdb.europe-west1.firebasedatabase.app/offered-places/${id}.json`
+      )
+      .pipe(
+        map((placeData) => {
+          return new Place(
+            id,
+            placeData.title,
+            placeData.description,
+            placeData.imageUrl,
+            placeData.price,
+            new Date(placeData.availableFrom),
+            new Date(placeData.availableTo),
+            placeData.userId
+          );
+        })
+      );
   }
 
   //fetchPlace
@@ -173,14 +185,6 @@ export class PlacesService {
           this._places.next(places.concat(newPlace));
         })
       );
-
-    // return this.places.pipe(
-    //   take(1),
-    //   delay(1000),
-    //   tap((places) => {
-    //     this._places.next(places.concat(newPlace));
-    //   })
-    // );
   }
 
   updatePlace(placeId: string, title: string, description: string) {
