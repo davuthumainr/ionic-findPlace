@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Booking } from './bookings.model';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { take, tap, delay } from 'rxjs/operators';
+import { take, tap, delay, switchMap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,10 @@ import { take, tap, delay } from 'rxjs/operators';
 export class BookingsService {
   private _bookings = new BehaviorSubject<Booking[]>([]);
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private httpClient: HttpClient
+  ) {}
 
   get bookings() {
     return this._bookings.asObservable();
@@ -26,6 +30,7 @@ export class BookingsService {
     dateFrom: Date,
     dateTo: Date
   ) {
+    let generatedId: string;
     const newBooking = new Booking(
       Math.random().toString(),
       placeId,
@@ -38,13 +43,22 @@ export class BookingsService {
       dateFrom,
       dateTo
     );
-    return this.bookings.pipe(
-      take(1),
-      delay(1000),
-      tap((bookings) => {
-        this._bookings.next(bookings.concat(newBooking));
-      })
-    );
+    return this.httpClient
+      .post<{ name: string }>(
+        'https://find-place-dvt-default-rtdb.europe-west1.firebasedatabase.app/bookings.json',
+        { ...newBooking, id: null }
+      )
+      .pipe(
+        switchMap((responseData) => {
+          generatedId = responseData.name;
+          return this.bookings;
+        }),
+        take(1),
+        tap((bookings) => {
+          newBooking.id = generatedId;
+          this._bookings.next(bookings.concat(newBooking));
+        })
+      );
   }
 
   cancelBooking(bookingId: string) {
